@@ -4,23 +4,22 @@ Param
     [string]$ProjectName
 )
 
+<###[Environment Variables]#####################>
+$Organization = $env:ADOS_ORGANIZATION
+$PAT          = $env:ADOS_PAT
+
 <###[Set Paths]#################################>
 $ModulePath = Join-Path $PSScriptRoot "\modules"
 $DataPath   = Join-Path $PSScriptRoot "..\..\data"
 
 <###[Load Modules]##############################>
-Import-Module (Join-Path $ModulePath "Utilities.ps1") -Force
-
-<###[Environment Variables]#####################>
-$Organization = $env:ADOS_ORGANIZATION
-$PAT          = $env:ADOS_PAT
-$Connstr      = $env:ADOS_DB_CONNECTIONSTRING
+Import-Module (Join-Path $ModulePath "ADOS") -Force
 
 <###[Script Variables]##########################>
-$Timestamp    = Get-Date -Format "yyyy-MM-dd HH:mm K"
-$FileDate     = Get-Date -Format "yyyy-MM-dd"
-$DataPath     = Join-Path $DataPath "$($Organization)" "$($FileDate)"
-$Filename     = Join-Path $DataPath "ProjectStatistics.csv"
+$Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm K"
+$FileDate  = Get-Date -Format "yyyy-MM-dd"
+$DataPath  = Join-Path $DataPath "$($Organization)" "$($FileDate)"
+$Filename  = Join-Path $DataPath "ProjectStatistics.csv"
 
 $AzureDevOpsAuthenicationHeader = @{Authorization = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($PAT)")) } + @{"Content-Type"="application/json"; "Accept"="application/json"}
 $UriOrganization                = "https://dev.azure.com/$($Organization)/"
@@ -28,13 +27,7 @@ $UriOrganizationRM              = "https://vsrm.dev.azure.com/$($Organization)/"
 $monthAgo                       = (Get-Date).AddMonths(-1).ToString("yyyy-MM-dd")
 
 # Create data path if it does not exist.
-if (!(Test-Path $DataPath))
-{
-    # Create path for data files.
-    Write-Verbose "Data directory not found."
-    Write-Verbose "Creating data directory."
-    New-Item $DataPath -Type Directory
-}
+Initialize-Path -Path $DataPath
 
 # Remove file if it already exists.
 if (Test-Path $Filename) {

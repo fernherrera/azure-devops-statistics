@@ -1,21 +1,19 @@
 ﻿[CmdletBinding()]
 Param
 (
-    [switch]$WriteToSQL
 )
+
+<###[Environment Variables]#####################>
+$Organization = $env:ADOS_ORGANIZATION
+$PAT          = $env:ADOS_PAT
 
 <###[Set Paths]#################################>
 $ModulePath = Join-Path $PSScriptRoot "\modules"
 $DataPath   = Join-Path $PSScriptRoot "..\..\data"
 
 <###[Load Modules]##############################>
-Import-Module (Join-Path $ModulePath "Utilities.ps1") -Force
+Import-Module (Join-Path $ModulePath "ADOS") -Force
 Import-Module (Join-Path $ModulePath "AzDevOps") -Force
-
-<###[Environment Variables]#####################>
-$Organization = $env:ADOS_ORGANIZATION
-$PAT          = $env:ADOS_PAT
-$Connstr      = $env:ADOS_DB_CONNECTIONSTRING
 
 <###[Script Variables]##########################>
 $Timestamp    = Get-Date -Format "yyyy-MM-dd HH:mm K"
@@ -39,13 +37,7 @@ $StatProperties = [ordered]@{
 }
 
 # Create data path if it does not exist.
-if (!(Test-Path $DataPath))
-{
-    # Create path for data files.
-    Write-Verbose "Data directory not found."
-    Write-Verbose "Creating data directory."
-    New-Item $DataPath -Type Directory
-}
+Initialize-Path -Path $DataPath
 
 # Remove file if it already exists.
 if (Test-Path $Filename) {
@@ -154,43 +146,6 @@ if ($StatProperties['Releases'] -ne 0)
 {
     $ReleaseCompletionPercentage = ($StatProperties['ReleasesCompleted'] / $StatProperties['Releases']).ToString("P");
     $StatProperties['ReleaseCompletionPercentage'] = $ReleaseCompletionPercentage;
-}
-
-if ($WriteToSQL)
-{
-    # Write to SQL database
-    Write-Debug "Writing to SQL Server."
-    $SQLQuery = "INSERT INTO [dbo].[OrganizationStats] 
-        (
-            [OrganizationName],
-            [Timestamp],
-            [Projects],
-            [BuildPipelines],
-            [Builds],
-            [BuildsCompleted],
-            [BuildCompletionPercentage],
-            [ReleasePipelines],
-            [Releases],
-            [ReleasesToProduction],
-            [ReleasesCompleted],
-            [ReleaseCompletionPercentage]
-        )
-        VALUES(
-            '$($StatProperties.Organization)',
-            '$($StatProperties.Timestamp)',
-            '$($StatProperties.Projects)',
-            '$($StatProperties.BuildPipelines)',
-            '$($StatProperties.Builds)',
-            '$($StatProperties.BuildsCompleted)',
-            '$($StatProperties.BuildCompletionPercentage)',
-            '$($StatProperties.ReleasePipelines)',
-            '$($StatProperties.Releases)',
-            '$($StatProperties.ReleasesToProduction)',
-            '$($StatProperties.ReleasesCompleted)',
-            '$($StatProperties.ReleaseCompletionPercentage)'
-        )"
-
-    Invoke-Sqlcmd -query $SQLQuery -ConnectionString $Connstr
 }
 
 Write-Verbose "Writing to file."

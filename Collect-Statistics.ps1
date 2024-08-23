@@ -3,24 +3,23 @@ param
 (
 )
 
-<###[Set Paths]#################################>
-$ScriptPath = Join-Path $PSScriptRoot "\src\powershell"
-$ModulePath = Join-Path $PSScriptRoot "\src\powershell\modules"
-$DataPath   = Join-Path $PSScriptRoot "\data"
-
-<###[Load Modules]##############################>
-Import-Module (Join-Path $ModulePath "Utilities.ps1") -Force
-Import-Module (Join-Path $ModulePath "AzDevOps") -Force
-Import-Module (Join-Path $ModulePath "AzStorage") -Force
-
 <###[Environment Variables]#####################>
 $Organization      = $env:ADOS_ORGANIZATION
 $StorageAccount    = $env:AZURE_STORAGE_ACCOUNT
 $StorageAccountKey = $env:AZURE_STORAGE_ACCOUNT_KEY
 $ContainerName     = $env:AZURE_STORAGE_CONTAINER
 
+<###[Set Paths]#################################>
+$ScriptPath = Join-Path $PSScriptRoot "\src\powershell"
+$ModulePath = Join-Path $PSScriptRoot "\src\powershell\modules"
+$DataPath   = Join-Path $PSScriptRoot "\data"
+
+<###[Load Modules]##############################>
+Import-Module (Join-Path $ModulePath "ADOS") -Force
+Import-Module (Join-Path $ModulePath "AzDevOps") -Force
+Import-Module (Join-Path $ModulePath "AzStorage") -Force
+
 <###[Script Variables]##########################>
-$timeStamp    = Get-Date -Format "yyyy-MM-dd HH:mm K"
 $FileDate     = Get-Date -Format "yyyy-MM-dd"
 $DataPath     = Join-Path $DataPath "$($Organization)" "$($FileDate)"
 

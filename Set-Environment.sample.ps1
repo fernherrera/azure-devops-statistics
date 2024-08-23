@@ -1,7 +1,6 @@
 # Azure DevOps
 $env:ADOS_ORGANIZATION = ''
 $env:ADOS_PAT = ''
-$env:ADOS_DB_CONNECTIONSTRING = ''
 
 # Azure Service Principal
 $env:AZURE_TENANT_ID = ''

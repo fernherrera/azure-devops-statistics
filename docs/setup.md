@@ -105,7 +105,6 @@ Setup the environment variables in order to run the PowerShell scripts.
 
 * **ADOS_ORGANIZATION** : Your Azure DevOps organization (ex: "intermexteam")
 * **ADOS_PAT** : Personal Access Token to access Azure DevOps APIs
-* **ADOS_DB_CONNECTIONSTRING** : SQL Server connection string to store statistics.
 * **AZURE_TENANT_ID** : Azure Service Principal Tenant ID
 * **AZURE_APPLICATION_ID** : Azure Service Principal (ClientId) used to connect to Azure resources
 * **AZURE_CLIENT_KEY** : Azure Service Principal key

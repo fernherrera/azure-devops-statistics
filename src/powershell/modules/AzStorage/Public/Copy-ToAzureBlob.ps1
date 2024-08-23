@@ -130,7 +130,7 @@ function Copy-ToAzureBlob
 			Write-Verbose "Checking availability of Azure container `"$containerName`""
 			$azcontainer = Get-AzStorageContainer -Name $containerName -Context $storageContext -ErrorAction SilentlyContinue
 			
-            if ($azcontainer -eq $null)
+            if ($null -eq $azcontainer)
             {
                 # Container doesn't exist, create a new one
                 Write-Verbose "Container `"$containerName`" does not exist, trying to create container"

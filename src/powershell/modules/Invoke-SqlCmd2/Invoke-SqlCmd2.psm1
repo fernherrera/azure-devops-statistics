@@ -22,4 +22,4 @@
         }
     }
 
-Export-ModuleMember -Function ($Public | Select -ExpandProperty Basename)
+Export-ModuleMember -Function ($Public | Select-Object -ExpandProperty Basename)

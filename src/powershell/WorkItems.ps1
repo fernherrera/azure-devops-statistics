@@ -4,34 +4,28 @@ Param
     [string]$ProjectName
 )
 
+<###[Environment Variables]#####################>
+$Organization = $env:ADOS_ORGANIZATION
+$PAT          = $env:ADOS_PAT
+
 <###[Set Paths]#################################>
 $ModulePath = Join-Path $PSScriptRoot "\modules"
 $DataPath   = Join-Path $PSScriptRoot "..\..\data"
 
 <###[Load Modules]##############################>
-Import-Module (Join-Path $ModulePath "Utilities.ps1") -Force
+Import-Module (Join-Path $ModulePath "ADOS") -Force
 Import-Module (Join-Path $ModulePath "AzDevOps") -Force
 
-<###[Environment Variables]#####################>
-$Organization = $env:ADOS_ORGANIZATION
-$PAT          = $env:ADOS_PAT
-
 <###[Script Variables]##########################>
-$timeStamp    = Get-Date -Format "yyyy-MM-dd HH:mm K"
-$FileDate     = Get-Date -Format "yyyy-MM-dd"
-$DataPath     = Join-Path $DataPath "$($Organization)" "$($FileDate)"
-$Filename     = Join-Path $DataPath "WorkItems.csv"
-$batchSize    = 200
+$TimeStamp = Get-Date -Format "yyyy-MM-dd HH:mm K"
+$FileDate  = Get-Date -Format "yyyy-MM-dd"
+$DataPath  = Join-Path $DataPath "$($Organization)" "$($FileDate)"
+$Filename  = Join-Path $DataPath "WorkItems.csv"
+$batchSize = 200
 
 
 # Create data path if it does not exist.
-if (!(Test-Path $DataPath))
-{
-    # Create path for data files.
-    Write-Verbose "Data directory not found."
-    Write-Verbose "Creating data directory."
-    New-Item $DataPath -Type Directory
-}
+Initialize-Path -Path $DataPath
 
 # Remove file if it already exists.
 if (Test-Path $Filename) {
@@ -117,6 +111,7 @@ foreach ($project in $allProjects)
             foreach ($wi in $wiBatch)
             {
                 $workItems += [PSCustomObject]@{
+                    timeStamp        = $TimeStamp
                     project          = $project.name
                     projectId        = $project.id
                     workItemId       = $wi.id

@@ -5,17 +5,17 @@ param
     [string]$RepoName    = ''  # Ability to narrow to specific list or regex. Update Line 20 for list with -in
 )
 
+<###[Environment Variables]#####################>
+$Organization = $env:ADOS_ORGANIZATION
+$PAT          = $env:ADOS_PAT
+
 <###[Set Paths]#################################>
 $ModulePath = Join-Path $PSScriptRoot "\modules"
 $DataPath   = Join-Path $PSScriptRoot "..\..\data"
 
 <###[Load Modules]##############################>
-Import-Module (Join-Path $ModulePath "Utilities.ps1") -Force
+Import-Module (Join-Path $ModulePath "ADOS") -Force
 Import-Module (Join-Path $ModulePath "AzDevOps") -Force
-
-<###[Environment Variables]#####################>
-$Organization = $env:ADOS_ORGANIZATION
-$PAT          = $env:ADOS_PAT
 
 <###[Script Variables]##########################>
 $Timestamp    = Get-Date -Format "yyyy-MM-dd HH:mm K"
@@ -27,12 +27,7 @@ $PollingDelay = 5
 $PollingMax   = 6
 
 # Create data path if it does not exist.
-if (!(Test-Path $DataPath))
-{
-    Write-Verbose "Data directory not found."
-    New-Item $DataPath -Type Directory
-    Write-Verbose "Directory Created at $($DataPath)"
-}
+Initialize-Path -Path $DataPath
 
 # Remove file if it already exists.
 if (Test-Path $Filename) {
@@ -103,7 +98,7 @@ foreach ($project in $projectList)
             }
             
             # Creating report here and storing in var for less noise
-            $Create = New-AzDevOpsPermissionReport -Session $AzSession -InputObject $requestBody
+            New-AzDevOpsPermissionReport -Session $AzSession -InputObject $requestBody
             
             # Set CheckReport to null so that the while loop works
             $CheckReport = $null
@@ -117,7 +112,7 @@ foreach ($project in $projectList)
                 # Write-Host '#' -NoNewline
                 Start-Sleep -Seconds $PollingDelay
                 $CurrentPoll++
-                $CheckReport = Get-AzDevOpsPermissionReportList -Session $AzSession | Where { $_.reportname -Match $requestBody.reportname }
+                $CheckReport = Get-AzDevOpsPermissionReportList -Session $AzSession | Where-Object { $_.reportname -Match $requestBody.reportname }
             }
             
             # Report is ready for Download at this point so the Var report is storing that report
