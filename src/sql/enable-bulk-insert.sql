@@ -18,7 +18,7 @@ Uncomment the following to remove any existing configuration
 /*
 	Create a database Master Key to store credentials
 */
-CREATE MASTER KEY ENCRYPTION BY PASSWORD = '4Ga#s4M2d*00kk62';
+CREATE MASTER KEY ENCRYPTION BY PASSWORD = '<DB_ENCRYPTION_KEY>';
 GO
 
 
@@ -44,7 +44,7 @@ CREATE EXTERNAL DATA SOURCE [Azure-Storage]
 WITH 
 ( 
 	TYPE = BLOB_STORAGE,
- 	LOCATION = 'https://imxdevbisa.blob.core.windows.net/devops-stats',
+ 	LOCATION = 'https://<STORAGE_ACCOUNT_NAME>.blob.core.windows.net/devops-stats',
  	CREDENTIAL = [Storage-Credentials]
 );
 
